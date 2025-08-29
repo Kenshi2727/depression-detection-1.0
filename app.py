@@ -1,3 +1,4 @@
+# (Full file — same improved UI code as before, but with rerun calls removed and replaced by safe returns.)
 import streamlit as st
 import pandas as pd 
 import pickle
@@ -270,7 +271,8 @@ def login_page():
                 if username == 'username' and password == 'password':
                     st.session_state['logged_in'] = True
                     st.success('🎉 Login successful!')
-                    st.experimental_rerun()
+                    # NO rerun call — return and let Streamlit re-run naturally
+                    return
                 else:
                     st.error('❌ Invalid credentials. Please try again.')
 
@@ -310,7 +312,8 @@ def main_page():
 
         if st.button("🚪 Logout", use_container_width=True):
             st.session_state['logged_in'] = False
-            st.experimental_rerun()
+            # NO rerun call; return to stop the current render (Streamlit will re-run)
+            return
 
     # Header
     st.markdown('<h1 class="main-title">🧠 MoodSense Analysis</h1>', unsafe_allow_html=True)
@@ -320,7 +323,6 @@ def main_page():
     st.markdown("### 📝 Text Analysis Input")
     left_col, right_col = st.columns([3, 1], gap="large")
     with left_col:
-        # try to re-use session state if sample was set earlier
         if 'text_input' not in st.session_state:
             st.session_state['text_input'] = ""
         text = st.text_area(
@@ -514,7 +516,8 @@ def main_page():
             with cols[i % 2]:
                 if st.button(f"📄 Try Sample {i+1}", key=f"sample_{i}"):
                     st.session_state['text_input'] = sample
-                    st.experimental_rerun()
+                    # NO rerun call — return to stop current rendering; Streamlit will re-run automatically
+                    return
                 st.write(f"*{sample[:70]}...*")
 
 # ---------------- App flow ----------------
